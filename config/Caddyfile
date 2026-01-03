@@ -1,0 +1,39 @@
+{
+    admin off
+    auto_https off
+}
+
+:80 {
+    handle /api/proxmox/* {
+        uri strip_prefix /api/proxmox
+        reverse_proxy proxmox-bridge:5000
+    }
+    
+    handle /vms* {
+        reverse_proxy proxmox-bridge:5000
+    }
+    
+    handle /ide/* {
+        uri strip_prefix /ide
+        reverse_proxy code-server:8443
+    }
+    
+    handle /git/* {
+        uri strip_prefix /git
+        reverse_proxy gitea:3000
+    }
+    
+    handle /ai/* {
+        uri strip_prefix /ai
+        reverse_proxy openwebui:8080
+    }
+    
+    handle /term/* {
+        uri strip_prefix /term
+        reverse_proxy ttyd:7681
+    }
+    
+    handle {
+        reverse_proxy dashy:8080
+    }
+}

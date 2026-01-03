@@ -1,0 +1,109 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - cockpit-net
+
+  dashy:
+    image: lissy93/dashy:latest
+    container_name: dashy
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./config/dashy.yml:/app/user-data/conf.yml:ro
+    networks:
+      - cockpit-net
+
+  code-server:
+    image: lscr.io/linuxserver/code-server:latest
+    container_name: code-server
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+      - PASSWORD=${CODE_SERVER_PASSWORD}
+      - SUDO_PASSWORD=${SUDO_PASSWORD}
+      - DEFAULT_WORKSPACE=/workspace
+    volumes:
+      - ${WORKSPACE_PATH:-/home/demetrios/workspace}:/workspace
+      - code_config:/config
+    networks:
+      - cockpit-net
+
+  ttyd:
+    build: ./services/terminal
+    container_name: ttyd
+    restart: unless-stopped
+    volumes:
+      - ${WORKSPACE_PATH:-/home/demetrios/workspace}:/workspace
+      - claude_config:/root/.claude
+      - ttyd_home:/root
+    working_dir: /workspace
+    networks:
+      - cockpit-net
+
+  gitea:
+    image: gitea/gitea:latest
+    container_name: gitea
+    restart: unless-stopped
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - GITEA__database__DB_TYPE=sqlite3
+      - GITEA__service__DISABLE_REGISTRATION=true
+    volumes:
+      - gitea_data:/data
+    ports:
+      - "2222:22"
+    networks:
+      - cockpit-net
+
+  proxmox-bridge:
+    build: ./services/proxmox-bridge
+    container_name: proxmox-bridge
+    restart: unless-stopped
+    environment:
+      - PROXMOX_HOST=${PROXMOX_HOST}
+      - PROXMOX_TOKEN_ID=${PROXMOX_TOKEN_ID}
+      - PROXMOX_TOKEN_SECRET=${PROXMOX_TOKEN_SECRET}
+      - PROXMOX_NODE=${PROXMOX_NODE:-pve}
+    networks:
+      - cockpit-net
+
+  openwebui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: openwebui
+    restart: unless-stopped
+    ports:
+      - "3000:8080"
+    environment:
+      - WEBUI_AUTH=true
+      - OLLAMA_BASE_URL=${OLLAMA_URL:-http://ai-gpu:11434}
+    volumes:
+      - openwebui_data:/app/backend/data
+    networks:
+      - cockpit-net
+
+networks:
+  cockpit-net:
+    driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:
+  code_config:
+  gitea_data:
+  openwebui_data:
+  ttyd_home:
+  claude_config:

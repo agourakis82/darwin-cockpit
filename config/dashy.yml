@@ -1,0 +1,85 @@
+pageInfo:
+  title: DARWIN Command Center
+  description: Computational Medicine Research Hub
+
+appConfig:
+  theme: dark
+  layout: auto
+  iconSize: large
+  statusCheck: true
+  statusCheckInterval: 30
+
+sections:
+  - name: Quick Access
+    icon: fas fa-bolt
+    displayData:
+      cols: 4
+    items:
+      - title: IDE
+        description: VS Code Server
+        url: /ide/
+        icon: si-visualstudiocode
+        
+      - title: Terminal
+        description: Claude Code
+        url: /term/
+        icon: fas fa-terminal
+        
+      - title: AI Chat
+        description: Open WebUI
+        url: http://100.122.190.4:3000
+        icon: fas fa-brain
+        target: newtab
+        
+      - title: Git
+        description: Gitea
+        url: /git/
+        icon: si-gitea
+
+  - name: Projects
+    icon: fas fa-folder-open
+    displayData:
+      cols: 3
+    items:
+      - title: PBPK
+        url: /ide/?folder=/workspace/pbpk
+        icon: fas fa-pills
+        
+      - title: Scaffold Studio
+        url: /ide/?folder=/workspace/scaffold-studio
+        icon: fas fa-cubes
+        
+      - title: Atlas
+        url: /ide/?folder=/workspace/atlas
+        icon: fas fa-brain
+        
+      - title: Genomics
+        url: /ide/?folder=/workspace/genomics
+        icon: fas fa-dna
+        
+      - title: Sounio
+        url: /ide/?folder=/workspace/sounio
+        icon: si-rust
+        
+      - title: BEAGLE
+        url: /ide/?folder=/workspace/beagle
+        icon: fas fa-dog
+
+  - name: Infrastructure
+    icon: fas fa-server
+    displayData:
+      collapsed: true
+    items:
+      - title: Proxmox
+        url: https://t560:8006
+        icon: si-proxmox
+        target: newtab
+        
+      - title: VMs
+        url: /api/proxmox/dashboard
+        icon: fas fa-server
+        
+      - title: Tailscale
+        url: https://login.tailscale.com/admin/machines
+        icon: si-tailscale
+        target: newtab
