@@ -71,7 +71,7 @@ sections:
       collapsed: true
     items:
       - title: Proxmox
-        url: https://t560:8006
+        url: https://192.168.3.169:8006
         icon: si-proxmox
         target: newtab
         
