@@ -51,7 +51,7 @@ services:
       - cockpit-net
 
   # ═══════════════════════════════════════════════════════════════════════════
-  # TERMINAL WEB (Claude Code)
+  # TERMINAL WEB
   # ═══════════════════════════════════════════════════════════════════════════
   ttyd:
     build: ./services/terminal
@@ -184,6 +184,32 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
       - ./config/grafana/provisioning:/etc/grafana/provisioning:ro
+    networks:
+      - cockpit-net
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # METRICS EXPORTERS
+  # ═══════════════════════════════════════════════════════════════════════════
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    command:
+      - '--path.rootfs=/host'
+    volumes:
+      - '/:/host:ro,rslave'
+    networks:
+      - cockpit-net
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    restart: unless-stopped
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
     networks:
       - cockpit-net
 
