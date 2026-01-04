@@ -36,6 +36,26 @@ sections:
         url: /git/
         icon: si-gitea
 
+  - name: DevOps
+    icon: fas fa-cogs
+    displayData:
+      cols: 3
+    items:
+      - title: CI/CD
+        description: Woodpecker
+        url: /ci/
+        icon: fas fa-rocket
+        
+      - title: Metrics
+        description: Grafana
+        url: /grafana/
+        icon: si-grafana
+        
+      - title: VMs
+        description: Proxmox Control
+        url: /api/proxmox/dashboard
+        icon: fas fa-server
+
   - name: Projects
     icon: fas fa-folder-open
     displayData:
@@ -74,10 +94,6 @@ sections:
         url: https://192.168.3.169:8006
         icon: si-proxmox
         target: newtab
-        
-      - title: VMs
-        url: /api/proxmox/dashboard
-        icon: fas fa-server
         
       - title: Tailscale
         url: https://login.tailscale.com/admin/machines

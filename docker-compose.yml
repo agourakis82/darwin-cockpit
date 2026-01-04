@@ -1,4 +1,7 @@
 services:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # INGRESS
+  # ═══════════════════════════════════════════════════════════════════════════
   caddy:
     image: caddy:2-alpine
     container_name: caddy
@@ -13,6 +16,9 @@ services:
     networks:
       - cockpit-net
 
+  # ═══════════════════════════════════════════════════════════════════════════
+  # PORTAL
+  # ═══════════════════════════════════════════════════════════════════════════
   dashy:
     image: lissy93/dashy:latest
     container_name: dashy
@@ -24,6 +30,9 @@ services:
     networks:
       - cockpit-net
 
+  # ═══════════════════════════════════════════════════════════════════════════
+  # IDE
+  # ═══════════════════════════════════════════════════════════════════════════
   code-server:
     image: lscr.io/linuxserver/code-server:latest
     container_name: code-server
@@ -41,6 +50,9 @@ services:
     networks:
       - cockpit-net
 
+  # ═══════════════════════════════════════════════════════════════════════════
+  # TERMINAL WEB (Claude Code)
+  # ═══════════════════════════════════════════════════════════════════════════
   ttyd:
     build: ./services/terminal
     container_name: ttyd
@@ -53,6 +65,9 @@ services:
     networks:
       - cockpit-net
 
+  # ═══════════════════════════════════════════════════════════════════════════
+  # GIT
+  # ═══════════════════════════════════════════════════════════════════════════
   gitea:
     image: gitea/gitea:latest
     container_name: gitea
@@ -69,6 +84,9 @@ services:
     networks:
       - cockpit-net
 
+  # ═══════════════════════════════════════════════════════════════════════════
+  # PROXMOX CONTROL
+  # ═══════════════════════════════════════════════════════════════════════════
   proxmox-bridge:
     build: ./services/proxmox-bridge
     container_name: proxmox-bridge
@@ -77,10 +95,13 @@ services:
       - PROXMOX_HOST=${PROXMOX_HOST}
       - PROXMOX_TOKEN_ID=${PROXMOX_TOKEN_ID}
       - PROXMOX_TOKEN_SECRET=${PROXMOX_TOKEN_SECRET}
-      - PROXMOX_NODE=${PROXMOX_NODE:-pve}
+      - PROXMOX_NODE=${PROXMOX_NODE:-t560-proxmox}
     networks:
       - cockpit-net
 
+  # ═══════════════════════════════════════════════════════════════════════════
+  # AI INTERFACE
+  # ═══════════════════════════════════════════════════════════════════════════
   openwebui:
     image: ghcr.io/open-webui/open-webui:main
     container_name: openwebui
@@ -92,6 +113,77 @@ services:
       - OLLAMA_BASE_URL=${OLLAMA_URL:-http://ai-gpu:11434}
     volumes:
       - openwebui_data:/app/backend/data
+    networks:
+      - cockpit-net
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # CI/CD - WOODPECKER
+  # ═══════════════════════════════════════════════════════════════════════════
+  woodpecker-server:
+    image: woodpeckerci/woodpecker-server:latest
+    container_name: woodpecker-server
+    restart: unless-stopped
+    environment:
+      - WOODPECKER_OPEN=true
+      - WOODPECKER_HOST=http://100.122.190.4/ci
+      - WOODPECKER_GITEA=true
+      - WOODPECKER_GITEA_URL=http://100.122.190.4/git
+      - WOODPECKER_GITEA_CLIENT=${WOODPECKER_GITEA_CLIENT}
+      - WOODPECKER_GITEA_SECRET=${WOODPECKER_GITEA_SECRET}
+      - WOODPECKER_SECRET=${WOODPECKER_SECRET}
+      - WOODPECKER_ADMIN=demetrios
+    volumes:
+      - woodpecker_data:/var/lib/woodpecker
+    networks:
+      - cockpit-net
+
+  woodpecker-agent:
+    image: woodpeckerci/woodpecker-agent:latest
+    container_name: woodpecker-agent
+    restart: unless-stopped
+    depends_on:
+      - woodpecker-server
+    environment:
+      - WOODPECKER_SERVER=woodpecker-server:9000
+      - WOODPECKER_SECRET=${WOODPECKER_SECRET}
+      - WOODPECKER_MAX_WORKFLOWS=4
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - cockpit-net
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # OBSERVABILITY - PROMETHEUS
+  # ═══════════════════════════════════════════════════════════════════════════
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - cockpit-net
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # OBSERVABILITY - GRAFANA
+  # ═══════════════════════════════════════════════════════════════════════════
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_SERVER_ROOT_URL=http://100.122.190.4/grafana/
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./config/grafana/provisioning:/etc/grafana/provisioning:ro
     networks:
       - cockpit-net
 
@@ -107,3 +199,6 @@ volumes:
   openwebui_data:
   ttyd_home:
   claude_config:
+  woodpecker_data:
+  prometheus_data:
+  grafana_data:

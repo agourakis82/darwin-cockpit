@@ -23,14 +23,17 @@
         reverse_proxy gitea:3000
     }
     
-    handle /ai/* {
-        uri strip_prefix /ai
-        reverse_proxy openwebui:8080
-    }
-    
     handle /term/* {
         uri strip_prefix /term
         reverse_proxy ttyd:7681
+    }
+    
+    handle /ci* {
+        reverse_proxy woodpecker-server:8000
+    }
+    
+    handle /grafana* {
+        reverse_proxy grafana:3000
     }
     
     handle {
