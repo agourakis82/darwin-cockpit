@@ -51,51 +51,87 @@ sections:
         url: /grafana/
         icon: si-grafana
         
-      - title: VMs
+      - title: Cluster
         description: Proxmox Control
         url: /api/proxmox/dashboard
         icon: fas fa-server
 
-  - name: Projects
-    icon: fas fa-folder-open
+  - name: Core Projects
+    icon: fas fa-flask
     displayData:
       cols: 3
     items:
-      - title: PBPK
+      - title: PBPK Platform
+        description: Pharmacokinetic Modeling
         url: /ide/?folder=/workspace/pbpk
         icon: fas fa-pills
         
       - title: Scaffold Studio
+        description: Biomaterials Analysis
         url: /ide/?folder=/workspace/scaffold-studio
         icon: fas fa-cubes
         
       - title: Atlas
+        description: Neuroimaging Platform
         url: /ide/?folder=/workspace/atlas
         icon: fas fa-brain
         
       - title: Genomics
+        description: Operator Genomics
         url: /ide/?folder=/workspace/genomics
         icon: fas fa-dna
         
       - title: Sounio
+        description: Language Compiler
         url: /ide/?folder=/workspace/sounio
         icon: si-rust
         
       - title: BEAGLE
+        description: ML Framework
         url: /ide/?folder=/workspace/beagle
         icon: fas fa-dog
+
+  - name: Research Projects
+    icon: fas fa-microscope
+    displayData:
+      cols: 3
+    items:
+      - title: Heliobiology
+        description: Solar-Biological Correlations
+        url: /ide/?folder=/workspace/heliobiology
+        icon: fas fa-sun
+        
+      - title: Hyperbolic Networks
+        description: Semantic Network Analysis
+        url: /ide/?folder=/workspace/hyperbolic-networks
+        icon: fas fa-project-diagram
+        
+      - title: MFC Platform
+        description: Social Action Platform
+        url: /ide/?folder=/workspace/mfc-platform
+        icon: fas fa-hands-helping
 
   - name: Infrastructure
     icon: fas fa-server
     displayData:
       collapsed: true
     items:
-      - title: Proxmox
+      - title: T560 Proxmox
         url: https://192.168.3.169:8006
+        icon: si-proxmox
+        target: newtab
+        
+      - title: R770 Proxmox
+        url: https://192.168.3.228:8006
         icon: si-proxmox
         target: newtab
         
       - title: Tailscale
         url: https://login.tailscale.com/admin/machines
         icon: si-tailscale
+        target: newtab
+        
+      - title: GitHub
+        url: https://github.com/agourakis82
+        icon: si-github
         target: newtab
