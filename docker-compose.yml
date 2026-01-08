@@ -131,7 +131,7 @@ services:
       - WOODPECKER_GITEA_URL=http://100.122.190.4/git
       - WOODPECKER_GITEA_CLIENT=${WOODPECKER_GITEA_CLIENT}
       - WOODPECKER_GITEA_SECRET=${WOODPECKER_GITEA_SECRET}
-      - WOODPECKER_SECRET=${WOODPECKER_SECRET}
+      - WOODPECKER_AGENT_SECRET=${WOODPECKER_AGENT_SECRET}
       - WOODPECKER_ADMIN=demetrios
     volumes:
       - woodpecker_data:/var/lib/woodpecker
@@ -145,8 +145,9 @@ services:
     depends_on:
       - woodpecker-server
     environment:
+      - DOCKER_API_VERSION=1.44
       - WOODPECKER_SERVER=woodpecker-server:9000
-      - WOODPECKER_SECRET=${WOODPECKER_SECRET}
+      - WOODPECKER_AGENT_SECRET=${WOODPECKER_AGENT_SECRET}
       - WOODPECKER_MAX_WORKFLOWS=4
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
