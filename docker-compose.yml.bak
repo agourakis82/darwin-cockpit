@@ -45,7 +45,6 @@ services:
       - SUDO_PASSWORD=${SUDO_PASSWORD}
       - DEFAULT_WORKSPACE=/workspace
     volumes:
-      - ./config/code-server/certs:/config/.config/code-server/certs
       - ${WORKSPACE_PATH:-/home/demetrios/workspace}:/workspace
       - code_config:/config
     networks:
